@@ -57,23 +57,16 @@ fn get_glyph_pixels(input_text: &str, font: &Font) -> Vec<u32> {
 
     for (char_num, character) in input_text.chars().enumerate() {
         let glyph = font.glyphs().get(&character).unwrap();
+        let bitmap = glyph.map();
 
         let char_left = char_num as i32 * font_char_max_x;
         let char_bottom = glyph.bounds().y;
 
-        for y in 0..glyph.height() {
-            for x in 0..glyph.width() {
-                let pixel_x = char_left + x as i32;
-                let pixel_y = char_bottom + y as i32;
-
-                if glyph.get(x, y) {
-                    let png_pixel_num = (pixel_y * line_pixel_width + pixel_x + (font_char_max_y - glyph.bounds().height as i32 - 1) * line_pixel_width) as u32;
-                    bits.push(png_pixel_num);
-                } else {
-
-                }
-
-            }
+        for bit in bitmap.iter() {
+            let pixel_x = char_left + bit as i32 % glyph.bounds().width as i32;
+            let pixel_y = bit as i32 / glyph.bounds().width as i32 - char_bottom;
+            let png_pixel_num = (pixel_y * line_pixel_width + pixel_x + (font_char_max_y - glyph.bounds().height as i32 - 3) * line_pixel_width) as u32;
+            bits.push(png_pixel_num);
         }
     }
 
