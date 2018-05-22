@@ -1,0 +1,9 @@
+[package]
+name = "png_text_box"
+version = "0.1.0"
+authors = ["jpartain <>"]
+
+[dependencies]
+png = "0.12.0"
+bdf = "0.5.5"
+clap = "2.31.2"
