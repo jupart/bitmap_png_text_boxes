@@ -55,7 +55,7 @@ fn main() {
     let font = bdf::open(config).unwrap();
     let bounds = font.bounds();
 
-    let input_text_lines = wrap_text(input, wrap);
+    let input_text_lines = wrap_text(input.clone(), wrap);
     let max_line_len = get_max_line_len(&input_text_lines);
 
     let max_pixel_width = bounds.width * max_line_len + padding * 2;
@@ -66,7 +66,10 @@ fn main() {
     let png_pixels = explode_to_png_pixels(bits_to_paint, max_pixel_width, max_pixel_height);
 
     // Create the png
-    write_png(png_pixels, "./test.png", max_pixel_width, max_pixel_height);
+    let mut filename = String::from(input).replace(" ", "_").replace(".", "").replace(",", "").replace("!", "").replace("?", "");
+    filename += max_pixel_width.to_string().as_str();
+    filename += ".png";
+    write_png(png_pixels, filename.as_str(), max_pixel_width, max_pixel_height);
 }
 
 fn wrap_text(input: &str, wrap_at: u32) -> Vec<String> {
