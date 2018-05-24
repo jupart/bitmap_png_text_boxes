@@ -81,7 +81,7 @@ fn wrap_text(input: &str, wrap_at: u32) -> Vec<String> {
         num_of_chars = num_of_chars + word.len() + 1;
 
         if num_of_chars > wrap_at as usize {
-            wrapped_text.push(line_text.clone());
+            wrapped_text.push(String::from(line_text.trim()));
 
             line_text = String::new();
             num_of_chars = word.len() + 1;
@@ -92,7 +92,7 @@ fn wrap_text(input: &str, wrap_at: u32) -> Vec<String> {
     }
 
     if !line_text.is_empty() {
-        wrapped_text.push(line_text);
+        wrapped_text.push(String::from(line_text.trim()));
     }
 
     // println!("Wrapped text at {}: {:?}", wrap_at, wrapped_text);
