@@ -19,4 +19,7 @@ OPTIONS:
 ARGS:
     <INPUT>    The input text
 ```
+
+![Example](This_is_what_the_default_box_looks_like244.png?raw=true "Example")
+
 Default font is Terminus (http://terminus-font.sourceforge.net/)
