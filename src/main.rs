@@ -19,22 +19,29 @@ fn main() {
                       .author("jupart <justinwpartain1@gmail.com>")
                       .about("Takes text argument, changes to png")
                       .arg(Arg::with_name("font")
-                           .short("f")
-                           .long("font")
+                           .short("t")
                            .value_name("FONT")
                            .help("Sets a custom font file")
                            .takes_value(true))
                       .arg(Arg::with_name("padding")
                            .short("p")
-                           .long("padding")
                            .value_name("PADDING")
                            .help("Amount of padding in pixels between box and text")
                            .takes_value(true))
                       .arg(Arg::with_name("wrap")
                            .short("w")
-                           .long("wrap")
                            .value_name("WRAP")
                            .help("Number of characters to wrap lines at")
+                           .takes_value(true))
+                      .arg(Arg::with_name("foreground")
+                           .short("fg")
+                           .value_name("FOREGROUND")
+                           .help("Foreground color of the format \"0xffffff\"")
+                           .takes_value(true))
+                      .arg(Arg::with_name("background")
+                           .short("bg")
+                           .value_name("BACKGROUND")
+                           .help("Background color of the format \"0xffffff\"")
                            .takes_value(true))
                       .arg(Arg::with_name("INPUT")
                            .help("The input text")
@@ -49,6 +56,8 @@ fn main() {
 
     let padding = value_t!(matches, "padding", u32).unwrap_or(10);
     let wrap = value_t!(matches, "wrap", u32).unwrap_or(30);
+    let foreground = matches.value_of("foreground").unwrap_or("0xebdbb2");
+    let background = matches.value_of("background").unwrap_or("0x1d2021");
     let input = matches.value_of("INPUT").unwrap();
 
     // Open the font, get its bounds
@@ -63,7 +72,7 @@ fn main() {
 
     // Get pixels to paint
     let bits_to_paint = get_box_pixels(input_text_lines, &font, padding, max_pixel_width, max_pixel_height);
-    let png_pixels = explode_to_png_pixels(bits_to_paint, max_pixel_width, max_pixel_height);
+    let png_pixels = explode_to_png_pixels(bits_to_paint, max_pixel_width, max_pixel_height, foreground, background);
 
     // Create the png
     let mut filename = String::from(input).replace(" ", "_").replace(".", "").replace(",", "").replace("!", "").replace("?", "");
@@ -155,20 +164,27 @@ fn add_box(character_pixels: &mut Vec<u32>, box_length: u32, box_height: u32) {
     }
 }
 
-fn explode_to_png_pixels(pixels: Vec<u32>, max_x: u32, max_y: u32) -> Vec<u8> {
+fn explode_to_png_pixels(pixels: Vec<u32>, max_x: u32, max_y: u32, fg: &str, bg: &str) -> Vec<u8> {
+    let fg1 = u8::from_str_radix(&fg[2..4], 16).unwrap();
+    let fg2 = u8::from_str_radix(&fg[4..6], 16).unwrap();
+    let fg3 = u8::from_str_radix(&fg[6..8], 16).unwrap();
+    let bg1 = u8::from_str_radix(&bg[2..4], 16).unwrap();
+    let bg2 = u8::from_str_radix(&bg[4..6], 16).unwrap();
+    let bg3 = u8::from_str_radix(&bg[6..8], 16).unwrap();
+
     let mut png_pixels = Vec::new();
 
     for i in 0..(max_x * max_y) {
         if pixels.contains(&i) {
-            png_pixels.push(235);
-            png_pixels.push(219);
-            png_pixels.push(178);
+            png_pixels.push(fg1);
+            png_pixels.push(fg2);
+            png_pixels.push(fg3);
             png_pixels.push(255);
 
         } else {
-            png_pixels.push(40);
-            png_pixels.push(40);
-            png_pixels.push(40);
+            png_pixels.push(bg1);
+            png_pixels.push(bg2);
+            png_pixels.push(bg3);
             png_pixels.push(255);
         }
     }
